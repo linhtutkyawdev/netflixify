@@ -1,4 +1,4 @@
-module netflixify
+module github.com/linhtutkyawdev/netflixify
 
 go 1.22.2
 

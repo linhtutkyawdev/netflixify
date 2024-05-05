@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"netflixify/internal/server"
+
+	"github.com/linhtutkyawdev/netflixify/internal/server"
 )
 
 func main() {

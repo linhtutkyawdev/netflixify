@@ -6,7 +6,7 @@ import (
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"netflixify/cmd/web"
+	"github.com/linhtutkyawdev/netflixify/cmd/web"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {

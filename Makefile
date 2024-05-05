@@ -6,6 +6,7 @@ all: build
 build:
 	@echo "Building..."
 	@templ generate
+	@bunx tailwindcss -i ./cmd/web/assets/css/tailwind.css -o ./cmd/web/assets/css/tailwind.min.css --minify
 	@go build -o main cmd/api/main.go
 
 # Run the application

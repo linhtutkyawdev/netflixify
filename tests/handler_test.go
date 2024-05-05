@@ -2,12 +2,13 @@ package tests
 
 import (
 	"encoding/json"
-	"github.com/labstack/echo/v4"
 	"net/http"
 	"net/http/httptest"
-	"netflixify/internal/server"
 	"reflect"
 	"testing"
+
+	"github.com/labstack/echo/v4"
+	"github.com/linhtutkyawdev/netflixify/internal/server"
 )
 
 func TestHandler(t *testing.T) {

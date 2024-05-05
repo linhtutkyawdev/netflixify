@@ -4,12 +4,12 @@ templ HelloForm() {
 	@Base() {
 		<form hx-post="/hello" method="POST" hx-target="#hello-container">
 			<input id="name" name="name" type="text"/>
-			<button type="submit">Submit</button>
+			<button type="submit" class="bg-indigo-500">Submit</button>
 		</form>
 		<div id="hello-container"></div>
 	}
 }
 
 templ HelloPost(name string) {
-	<div>Hello, { name }</div>
+	<div>Heo, { name }</div>
 }
