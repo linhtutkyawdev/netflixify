@@ -7,6 +7,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/linhtutkyawdev/netflixify/cmd/web"
+	"github.com/linhtutkyawdev/netflixify/cmd/web/components"
+	"github.com/linhtutkyawdev/netflixify/cmd/web/services"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -16,17 +18,18 @@ func (s *Server) RegisterRoutes() http.Handler {
 	fileServer := http.FileServer(http.FS(web.Files))
 	e.GET("/assets/*", echo.WrapHandler(fileServer))
 
-	e.GET("/web", echo.WrapHandler(templ.Handler(web.HelloForm())))
-	e.POST("/hello", echo.WrapHandler(http.HandlerFunc(web.HelloWebHandler)))
+	e.GET("/", echo.WrapHandler(templ.Handler(components.Index())))
+	e.GET("/thumbnail", echo.WrapHandler(templ.Handler(components.Thumbnail())))
+	e.GET("/api", s.ApiHandler)
 
-	e.GET("/", s.HelloWorldHandler)
+	e.POST("/thumbnail", echo.WrapHandler(http.HandlerFunc(services.ThumbnailWebHandler)))
 
 	return e
 }
 
-func (s *Server) HelloWorldHandler(c echo.Context) error {
+func (s *Server) ApiHandler(c echo.Context) error {
 	resp := map[string]string{
-		"message": "Hello World",
+		"message": "Api is Working",
 	}
 
 	return c.JSON(http.StatusOK, resp)

@@ -18,7 +18,7 @@ func TestHandler(t *testing.T) {
 	c := e.NewContext(req, resp)
 	s := &server.Server{}
 	// Assertions
-	if err := s.HelloWorldHandler(c); err != nil {
+	if err := s.ApiHandler(c); err != nil {
 		t.Errorf("handler() error = %v", err)
 		return
 	}

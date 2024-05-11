@@ -1,0 +1,29 @@
+package components
+
+templ Thumbnail() {
+	@Base() {
+		<div class="w-[720px] aspect-video overflow-hidden">
+			<div id="template" class="w-full h-full relative bg-cover overflow-hidden bg-[url('/assets/img/bg.jpg')]">
+				<div class="w-1/2 h-[200%] bg-white/90 -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute"></div>
+				<div class="w-3/5 h-[200%] bg-white/50 -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute"></div>
+				<div class="absolute text-slate-900 font-geist max-w-[250px] h-full m-4">
+					<div class="relative w-full h-full">
+						<h1 class="text-6xl font-semibold my-8">
+							One Piece
+						</h1>
+						<p class="mb-4 text-2xl font-semibold border-b-2 py-4">Rating : 99%</p>
+						// bedge
+						<div class="flex flex-wrap gap-1 w-full">
+							<span class="bg-indigo-400/90 text-white px-2 rounded-full">Anime</span>
+							<span class="bg-indigo-400/90 text-white px-2 rounded-full">Series</span>
+							<span class="bg-indigo-400/90 text-white px-2 rounded-full">Shounen</span>
+							<span class="bg-indigo-400/90 text-white px-2 rounded-full">Action</span>
+							<span class="bg-indigo-400/90 text-white px-2 rounded-full">Comedy</span>
+						</div>
+					</div>
+					<div class="absolute bottom-0 text-slate-900 text-sm mb-6">POWERED BY NETFLIXIFY</div>
+				</div>
+			</div>
+		</div>
+	}
+}

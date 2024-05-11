@@ -1,0 +1,16 @@
+package components
+
+templ Index() {
+	@Base() {
+		<div class="m-4" id="thumbnail-form-container">
+			<form hx-post="/thumbnail" method="POST" hx-target="#thumbnail-form-container">
+				<input class="p-2 bg-slate-300 rounded" id="name" name="name" type="text"/>
+				<button type="submit" class="bg-indigo-400 p-2 rounded text-white font-bold">Submit</button>
+			</form>
+		</div>
+	}
+}
+
+templ Hello(name string) {
+	<h1>Hello { name }</h1>
+}

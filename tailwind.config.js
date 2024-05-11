@@ -2,8 +2,12 @@
 module.exports = {
   content: ["./cmd/web/**/*.templ"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        poppins: 'Poppins',
+        geist: 'Geist'
+      }
+    },
   },
   plugins: [],
 }
-
