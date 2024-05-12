@@ -29,7 +29,7 @@ func Index() templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"m-4\" id=\"thumbnail-form-container\"><form hx-post=\"/thumbnail\" method=\"POST\" hx-target=\"#thumbnail-form-container\"><input class=\"p-2 bg-slate-300 rounded\" id=\"name\" name=\"name\" type=\"text\"> <button type=\"submit\" class=\"bg-indigo-400 p-2 rounded text-white font-bold\">Submit</button></form></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"m-4\" id=\"thumbnail-form-container\"><form hx-encoding=\"multipart/form-data\" hx-post=\"/thumbnail\" _=\"on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100\"><input type=\"file\" name=\"file\"> <button>Upload</button> <progress id=\"progress\" value=\"0\" max=\"100\"></progress></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -69,7 +69,7 @@ func Hello(name string) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/components/index.templ`, Line: 15, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `cmd/web/components/index.templ`, Line: 22, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

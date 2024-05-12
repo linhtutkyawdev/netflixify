@@ -3,9 +3,16 @@ package components
 templ Index() {
 	@Base() {
 		<div class="m-4" id="thumbnail-form-container">
-			<form hx-post="/thumbnail" method="POST" hx-target="#thumbnail-form-container">
-				<input class="p-2 bg-slate-300 rounded" id="name" name="name" type="text"/>
-				<button type="submit" class="bg-indigo-400 p-2 rounded text-white font-bold">Submit</button>
+			<form
+				hx-encoding="multipart/form-data"
+				hx-post="/thumbnail"
+				_="on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100"
+			>
+				<input type="file" name="file"/>
+				<button>
+					Upload
+				</button>
+				<progress id="progress" value="0" max="100"></progress>
 			</form>
 		</div>
 	}
