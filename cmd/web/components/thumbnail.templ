@@ -1,10 +1,14 @@
 package components
 
-templ Thumbnail() {
+css bgImg(src string) {
+	background-image: { "url("+src+")" };
+}
+
+templ Thumbnail(imgSrc string) {
 	@Base() {
 		<div class="w-[720px] aspect-video overflow-hidden">
-			<div id="template" class="w-full h-full relative bg-cover overflow-hidden bg-[url('/assets/img/bg.jpg')]">
-				<div class="w-1/2 h-[200%] bg-white/90 -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute"></div>
+			<div id="template" class={ "w-full h-full relative bg-cover overflow-hidden", bgImg(imgSrc) }>
+				<div class="w-1/2 h-[200%] bg-white -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute"></div>
 				<div class="w-3/5 h-[200%] bg-white/50 -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute"></div>
 				<div class="absolute text-slate-900 font-geist max-w-[250px] h-full m-4">
 					<div class="relative w-full h-full">

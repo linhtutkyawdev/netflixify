@@ -30,3 +30,7 @@ main
 
 # templ-go files
 *_templ.go
+
+# doctron & config
+doctron
+conf

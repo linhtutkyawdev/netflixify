@@ -19,7 +19,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	e.GET("/assets/*", echo.WrapHandler(fileServer))
 
 	e.GET("/", echo.WrapHandler(templ.Handler(components.Index())))
-	e.GET("/thumbnail", echo.WrapHandler(templ.Handler(components.Thumbnail())))
+	e.GET("/thumbnail", echo.WrapHandler(templ.Handler(components.Thumbnail("assets/img/bg.jpeg"))))
 	e.GET("/api", s.ApiHandler)
 
 	e.POST("/thumbnail", echo.WrapHandler(http.HandlerFunc(services.ThumbnailWebHandler)))
