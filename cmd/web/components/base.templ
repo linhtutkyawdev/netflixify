@@ -10,6 +10,11 @@ templ Base() {
 			<script src="assets/js/hyperscript.min.js"></script>
 			<link href="assets/css/tailwind.min.css" rel="stylesheet"/>
 		</head>
+		<style>
+			[contenteditable] { 
+        	    outline: 0px solid transparent; 
+        	} 
+		</style>
 		<body class="w-max">
 			<main>
 				{ children... }

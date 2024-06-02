@@ -6,42 +6,49 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"image/png"
 	"io"
 	"log"
-	"mime/multipart"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
+	"github.com/labstack/echo/v4"
+	"github.com/lampnick/doctron-client-go"
 	"github.com/linhtutkyawdev/netflixify/cmd/web/components"
+	"github.com/oliamb/cutter"
 
 	imgBB "github.com/JohnNON/ImgBB"
 )
 
 const (
-	key = "3aa950d66034374fe3e87df0f6a1cbc5"
+	key         = "3aa950d66034374fe3e87df0f6a1cbc5"
+	tempImgFile = "tmp.png"
+	bgImgUrl    = "assets/img/bg.jpeg"
+	Url         = "http://localhost:3000"
+
+	//doctron
+	domain          = "http://localhost:8080"
+	defaultUsername = "doctron"
+	defaultPassword = "lampnick"
 )
 
-func ThumbnailWebHandler(w http.ResponseWriter, r *http.Request) {
-	// err := r.ParseForm()
-
-	// if err != nil {
-	// 	http.Error(w, "Bad Request", http.StatusBadRequest)
-	// }
-
-	file, _, _ := r.FormFile("file")
+func ThumbnailDefaultHandler(w http.ResponseWriter, r *http.Request) {
+	file, _, _ := r.FormFile("imgSrc")
 	defer file.Close()
 
-	// create a destination file
-	// dst, _ := os.Create(filepath.Join("./cmd/web/assets/img/", header.Filename))
-	// defer dst.Close()
+	buf := bytes.NewBuffer(nil)
+	if _, err := io.Copy(buf, file); err != nil {
+		log.Fatal(err)
+	}
 
-	// upload the file to destination path
-	// nb_bytes, _ := io.Copy(dst, file)
+	bg := upload_to_imgbb(buf.Bytes(), 60)
 
-	// fmt.Println("File uploaded successfully. ", nb_bytes)
+	thumbnail := createThumbnail(Url + "/thumbnail?imgSrc=" + bg.Data.Image.URL + "&title=" + r.FormValue("title") + "&subtitle=" + r.FormValue("subtitle") + "&categories=" + r.FormValue("categories"))
 
-	res := wev(file)
-	component := components.Thumbnail(res.Data.Image.URL)
+	w.Header().Set("Content-Type", "image/png")
+	component := components.Thumbnail(thumbnail.Data.Image.URL, r.FormValue("title"), r.FormValue("subtitle"), strings.Split(r.FormValue("categories"), ","))
 	err := component.Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -49,74 +56,65 @@ func ThumbnailWebHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// const domain = "http://localhost:8080"
-// const defaultUsername = "doctron"
-// const defaultPassword = "lampnick"
-
-// func createThumbnail() {
-// 	client := doctron.NewClient(context.Background(), domain, defaultUsername, defaultPassword)
-// 	req := doctron.NewDefaultHTML2ImageRequestDTO()
-// 	req.ConvertURL = "http://localhost:3000/thumbnail"
-// 	response, err := client.HTML2Image(req)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	log.Println(len(response.Data))
-
-// 	f, err := os.Create("example.png")
-// 	if err != nil {
-// 		log.Fatal("Cannot create file", err)
-// 	}
-// 	defer f.Close()
-
-// 	n2, err := f.Write(response.Data)
-// 	if err != nil {
-// 		log.Fatal("Cannot write file", err)
-// 	}
-// 	fmt.Printf("wrote %d bytes\n", n2)
-
-// 	f2, err := os.Open("example.png")
-// 	if err != nil {
-// 		log.Fatal("Cannot open file", err)
-// 	}
-
-// 	img, err := png.Decode(f2)
-// 	if err != nil {
-// 		log.Fatal("Cannot decode image:", err)
-// 	}
-
-// 	cImg, err := cutter.Crop(img, cutter.Config{
-// 		Height: 405, // height in pixel or Y ratio(see Ratio Option below)
-// 		Width:  720, // width in pixel or X ratio
-// 		// Mode:    cutter.TopLeft,      // Accepted Mode: TopLeft, Centered
-// 		// Anchor:  image.Point{10, 10}, // Position of the top left point
-// 		// Options: 0,                   // Accepted Option: Ratio
-// 	})
-
-// 	if err != nil {
-// 		log.Fatal("Cannot crop image:", err)
-// 	}
-
-// 	f3, err := os.Create("example.png")
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	defer f3.Close()
-// 	if err := png.Encode(f3, cImg); err != nil {
-// 		panic(err)
-// 	}
-
-// 	fmt.Println("cImg dimension:", cImg.Bounds())
-
-// }
-
-func wev(f multipart.File) imgBB.Response {
-	buf := bytes.NewBuffer(nil)
-	if _, err := io.Copy(buf, f); err != nil {
+func createThumbnail(url string) imgBB.Response {
+	client := doctron.NewClient(context.Background(), domain, defaultUsername, defaultPassword)
+	req := doctron.NewDefaultHTML2ImageRequestDTO()
+	req.ConvertURL = url
+	response, err := client.HTML2Image(req)
+	if err != nil {
 		log.Fatal(err)
 	}
-	img, err := imgBB.NewImageFromFile(hashSum(buf.Bytes()), 7*24*60*60, buf.Bytes())
+	log.Println(len(response.Data))
+
+	f, err := os.Create(tempImgFile)
+	if err != nil {
+		log.Fatal("Cannot create file", err)
+	}
+	defer f.Close()
+
+	n2, err := f.Write(response.Data)
+	if err != nil {
+		log.Fatal("Cannot write file", err)
+	}
+	fmt.Printf("wrote %d bytes\n", n2)
+
+	f2, err := os.Open(tempImgFile)
+	if err != nil {
+		log.Fatal("Cannot open file", err)
+	}
+
+	img, err := png.Decode(f2)
+	if err != nil {
+		log.Fatal("Cannot decode image:", err)
+	}
+
+	cImg, err := cutter.Crop(img, cutter.Config{
+		Height: 405, // height in pixel or Y ratio(see Ratio Option below)
+		Width:  720, // width in pixel or X ratio
+		// Mode:    cutter.TopLeft,      // Accepted Mode: TopLeft, Centered
+		// Anchor:  image.Point{10, 10}, // Position of the top left point
+		// Options: 0,                   // Accepted Option: Ratio
+	})
+
+	if err != nil {
+		log.Fatal("Cannot crop image:", err)
+	}
+
+	buf := bytes.NewBuffer(nil)
+	err = png.Encode(buf, cImg)
+
+	if err != nil {
+		log.Fatal("Cannot encode image:", err)
+	}
+
+	res := upload_to_imgbb(buf.Bytes(), 60*60)
+
+	os.Remove(tempImgFile)
+	return res
+}
+
+func upload_to_imgbb(bytes []byte, exp uint64) imgBB.Response {
+	img, err := imgBB.NewImageFromFile(hashSum(bytes), exp, bytes)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -141,3 +139,27 @@ func hashSum(b []byte) string {
 
 	return hex.EncodeToString(sum[:])
 }
+
+func ThumbnailShowHandler(c echo.Context) error {
+	imgSrc := c.QueryParam("imgSrc")
+	if imgSrc == "" {
+		imgSrc = bgImgUrl
+	}
+	title := c.QueryParam("title")
+	if title == "" {
+		title = "One Piece"
+	}
+	subtitle := c.QueryParam("subtitle")
+	if subtitle == "" {
+		subtitle = "Rating : 9.5"
+	}
+	categoriesStr := c.QueryParam("categories")
+	categories := []string{"Anime", "Series", "Shonen", "Action", "Comedy"}
+	if categoriesStr != "" {
+		categories = strings.Split(categoriesStr, ",")
+	}
+	component := components.Thumbnail(imgSrc, title, subtitle, categories)
+	return component.Render(c.Request().Context(), c.Response())
+}
+
+// ?title=One%20Piece&subtitle=Rating+%3A+9.5&categories=Anime,Series,Shounen,Action,Comedy&imgSrc=assets%2Fimg%2Fbg.jpeg
