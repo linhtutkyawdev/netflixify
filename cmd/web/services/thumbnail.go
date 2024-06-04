@@ -4,13 +4,12 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
+	"encoding/base64"
 	"encoding/hex"
-	"fmt"
 	"image/png"
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -23,33 +22,48 @@ import (
 )
 
 const (
-	key         = "3aa950d66034374fe3e87df0f6a1cbc5"
-	tempImgFile = "tmp.png"
-	bgImgUrl    = "assets/img/bg.jpeg"
-	Url         = "http://localhost:3000"
+	// imgBB
+	imgBB_key = "3aa950d66034374fe3e87df0f6a1cbc5"
 
-	//doctron
-	domain          = "http://localhost:8080"
-	defaultUsername = "doctron"
-	defaultPassword = "lampnick"
+	// doctron
+	doctron_host    = "http://localhost:8080"
+	doctronUsername = "doctron"
+	doctronPassword = "lampnick"
+
+	// wev
+	temp_file     = "tmp.png"
+	defaultImgSrc = "assets/img/bg.jpeg"
+	host          = "http://localhost:3000"
 )
 
-func ThumbnailDefaultHandler(w http.ResponseWriter, r *http.Request) {
+func ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
+	imgSrc := ""
 	file, _, _ := r.FormFile("imgSrc")
-	defer file.Close()
+	if file != nil {
+		println("\n\n\n\nNotNil!\n\n\n\n\n\n")
+		buf := bytes.NewBuffer(nil)
+		if _, err := io.Copy(buf, file); err != nil {
+			log.Fatal(err)
+		}
+		imgSrc = uploadToImgbb(buf.Bytes(), 60).Data.Image.URL
+		defer file.Close()
+	}
+
+	thumbnailUrl := createThumbnail(host + "/thumbnail?imgSrc=" + imgSrc + "&title=" + r.FormValue("title") + "&subtitle=" + r.FormValue("subtitle") + "&categories=" + r.FormValue("categories")).Data.Image.URL
+
+	res, err := http.Get(thumbnailUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer res.Body.Close()
 
 	buf := bytes.NewBuffer(nil)
-	if _, err := io.Copy(buf, file); err != nil {
+	if _, err := io.Copy(buf, res.Body); err != nil {
 		log.Fatal(err)
 	}
 
-	bg := upload_to_imgbb(buf.Bytes(), 60)
-
-	thumbnail := createThumbnail(Url + "/thumbnail?imgSrc=" + bg.Data.Image.URL + "&title=" + r.FormValue("title") + "&subtitle=" + r.FormValue("subtitle") + "&categories=" + r.FormValue("categories"))
-
-	w.Header().Set("Content-Type", "image/png")
-	component := components.Thumbnail(thumbnail.Data.Image.URL, r.FormValue("title"), r.FormValue("subtitle"), strings.Split(r.FormValue("categories"), ","))
-	err := component.Render(r.Context(), w)
+	component := components.DownloadThumbnail("data:image/png;base64, "+base64.StdEncoding.EncodeToString(buf.Bytes()), strings.ToLower(strings.ReplaceAll(r.FormValue("title"), " ", "_")))
+	err = component.Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Fatalf("Error rendering in CaptureWebHandler: %e", err)
@@ -57,33 +71,18 @@ func ThumbnailDefaultHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createThumbnail(url string) imgBB.Response {
-	client := doctron.NewClient(context.Background(), domain, defaultUsername, defaultPassword)
+	client := doctron.NewClient(context.Background(), doctron_host, doctronUsername, doctronPassword)
 	req := doctron.NewDefaultHTML2ImageRequestDTO()
 	req.ConvertURL = url
+
+	// url to img
 	response, err := client.HTML2Image(req)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(len(response.Data))
 
-	f, err := os.Create(tempImgFile)
-	if err != nil {
-		log.Fatal("Cannot create file", err)
-	}
-	defer f.Close()
+	img, err := png.Decode(bytes.NewReader(response.Data))
 
-	n2, err := f.Write(response.Data)
-	if err != nil {
-		log.Fatal("Cannot write file", err)
-	}
-	fmt.Printf("wrote %d bytes\n", n2)
-
-	f2, err := os.Open(tempImgFile)
-	if err != nil {
-		log.Fatal("Cannot open file", err)
-	}
-
-	img, err := png.Decode(f2)
 	if err != nil {
 		log.Fatal("Cannot decode image:", err)
 	}
@@ -95,25 +94,22 @@ func createThumbnail(url string) imgBB.Response {
 		// Anchor:  image.Point{10, 10}, // Position of the top left point
 		// Options: 0,                   // Accepted Option: Ratio
 	})
-
 	if err != nil {
 		log.Fatal("Cannot crop image:", err)
 	}
 
 	buf := bytes.NewBuffer(nil)
 	err = png.Encode(buf, cImg)
-
 	if err != nil {
 		log.Fatal("Cannot encode image:", err)
 	}
 
-	res := upload_to_imgbb(buf.Bytes(), 60*60)
+	res := uploadToImgbb(buf.Bytes(), 60*60)
 
-	os.Remove(tempImgFile)
 	return res
 }
 
-func upload_to_imgbb(bytes []byte, exp uint64) imgBB.Response {
+func uploadToImgbb(bytes []byte, exp uint64) imgBB.Response {
 	img, err := imgBB.NewImageFromFile(hashSum(bytes), exp, bytes)
 	if err != nil {
 		log.Fatal(err)
@@ -123,27 +119,25 @@ func upload_to_imgbb(bytes []byte, exp uint64) imgBB.Response {
 		Timeout: 30 * time.Second,
 	}
 
-	imgBBClient := imgBB.NewClient(httpClient, key)
+	imgBBClient := imgBB.NewClient(httpClient, imgBB_key)
 
-	resp, err := imgBBClient.Upload(context.Background(), img)
+	res, err := imgBBClient.Upload(context.Background(), img)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%v\n", resp)
-	return resp
+	return res
 }
 
 func hashSum(b []byte) string {
 	sum := md5.Sum(b)
-
 	return hex.EncodeToString(sum[:])
 }
 
-func ThumbnailShowHandler(c echo.Context) error {
+func ThumbnailHandler(c echo.Context) error {
 	imgSrc := c.QueryParam("imgSrc")
 	if imgSrc == "" {
-		imgSrc = bgImgUrl
+		imgSrc = defaultImgSrc
 	}
 	title := c.QueryParam("title")
 	if title == "" {

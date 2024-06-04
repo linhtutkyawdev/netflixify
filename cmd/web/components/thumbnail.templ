@@ -10,9 +10,10 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 			id="thumbnail-form"
 			hx-encoding="multipart/form-data"
 			hx-post="/thumbnail"
-			_="on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100"
+			class="w-fit"
 		>
 			<div
+				id="thumbnail-container"
 				class="w-[720px] aspect-video overflow-hidden"
 				contenteditable
 			>
@@ -39,13 +40,14 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 				<input type="text" hidden="true" name="subtitle"/>
 				<input type="text" hidden="true" name="categories"/>
 			</div>
-			<button id="saveBtn" class="bg-slate-900 text-white px-4 py-2 rounded-sm my-4 w-[720px]">Save</button>
-			<progress id="progress" value="0" max="100"></progress>
+			<button id="saveBtn" class="bg-slate-900 text-white px-4 py-2 rounded-sm my-4 w-[720px]">Save as image</button>
 		</form>
 		<script>
 				const template = document.getElementById("thumbnail-template");
 				const form = document.getElementById("thumbnail-form");
 				const [imgSrc, title, subtitle, categories] = form;
+				const saveBtn = document.getElementById("saveBtn");
+				const thumbnailContainer = document.getElementById("thumbnail-container");
 
 				template.addEventListener("click", (e) => e.target.id=="thumbnail-template" && imgSrc.click());
 	
@@ -56,11 +58,34 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 				  }
 				});
 
-				document.getElementById("saveBtn").addEventListener("click", (e) => {
+				saveBtn.addEventListener("click", () => {
 					title.value = document.getElementById("title").innerText;
 					subtitle.value = document.getElementById("subtitle").innerText;
 					categories.value = document.getElementById("categories").innerText.split("\n").join(",");
+					saveBtn.innerHTML = "Loading..."
 				})
+
+				let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+				if (isMobile) {
+				  // User is accessing the page on a mobile device
+				  console.log("Mobile device detected");
+				  thumbnailContainer.classList.replace("w-[720px]", "w-screen");
+				  form.classList.add("mx-auto");
+				} else {
+				  // User is accessing the page on a desktop device
+				  console.log("Desktop device detected");
+				}
 			</script>
+	}
+}
+
+templ DownloadThumbnail(imgSrc string, fileName string) {
+	@Base() {
+		<img
+			src={ imgSrc }
+			alt={ fileName }
+		/>
+		<a href={ templ.SafeURL(imgSrc) } download={ fileName } class="bg-slate-900 text-white text-center px-4 py-2 rounded-sm my-4 w-[720px] block">Download</a>
 	}
 }
