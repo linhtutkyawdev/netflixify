@@ -13,7 +13,7 @@ import (
 
 func TestHandler(t *testing.T) {
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api", nil)
 	resp := httptest.NewRecorder()
 	c := e.NewContext(req, resp)
 	s := &server.Server{}
@@ -26,7 +26,7 @@ func TestHandler(t *testing.T) {
 		t.Errorf("handler() wrong status code = %v", resp.Code)
 		return
 	}
-	expected := map[string]string{"message": "Hello World"}
+	expected := map[string]string{"message": "Api is Working"}
 	var actual map[string]string
 	// Decode the response body into the actual map
 	if err := json.NewDecoder(resp.Body).Decode(&actual); err != nil {

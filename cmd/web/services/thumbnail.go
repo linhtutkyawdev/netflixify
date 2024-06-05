@@ -26,14 +26,15 @@ const (
 	imgBB_key = "3aa950d66034374fe3e87df0f6a1cbc5"
 
 	// doctron
-	doctron_host    = "http://localhost:8080"
+	// https://doctron-latest.onrender.com
+	doctron_host    = "http://0.0.0.0:8080"
 	doctronUsername = "doctron"
 	doctronPassword = "lampnick"
 
 	// wev
 	temp_file     = "tmp.png"
 	defaultImgSrc = "assets/img/bg.jpeg"
-	host          = "http://localhost:3000"
+	host          = "http://0.0.0.0:3000"
 )
 
 func ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {

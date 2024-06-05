@@ -6,8 +6,8 @@ all: build
 build:
 	@echo "Building..."
 	@templ generate
-	@bunx tailwindcss -i ./cmd/web/assets/css/tailwind.css -o ./cmd/web/assets/css/tailwind.min.css --minify
-	@go build -o main cmd/api/main.go
+	@tailwindcss -i ./cmd/web/assets/css/tailwind.css -o ./cmd/web/assets/css/tailwind.min.css --minify
+	@go build -o netflixify cmd/api/main.go
 
 # Run the application
 run:
@@ -21,7 +21,7 @@ test:
 # Clean the binary
 clean:
 	@echo "Cleaning..."
-	@rm -f main
+	@rm -f netflixify
 
 # Live Reload
 watch:

@@ -1,0 +1,10 @@
+.idx
+.vscode
+tmp
+.air.toml
+.env
+.gitignore
+.Makefile
+netflixify
+README.md
+tailwind.config.js
