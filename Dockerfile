@@ -40,7 +40,6 @@ COPY --from=build-stage /app/doctron/conf/default.yaml /doctron.yaml
 COPY --from=build-stage /app/run.sh /run.sh
 RUN chmod +x /run.sh
 
-ENV PORT 3000
 EXPOSE $PORT
 
 EXPOSE 8080

@@ -10,14 +10,16 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 			id="thumbnail-form"
 			hx-encoding="multipart/form-data"
 			hx-post="/thumbnail"
-			class="w-fit"
+			hx-target="#btn-container"
+			hx-swap="outerHTML"
+			class="w-[720px]"
 		>
 			<div
 				id="thumbnail-container"
-				class="w-[720px] aspect-video overflow-hidden"
+				class="w-full aspect-video overflow-hidden"
 				contenteditable
 			>
-				<div id="thumbnail-template" class={ "w-full h-full relative bg-cover overflow-hidden cursor-pointer", bgImg(imgSrc) }>
+				<div id="thumbnail-template" imgSrc-data={ imgSrc } class={ "w-full h-full relative bg-cover overflow-hidden cursor-pointer", bgImg(imgSrc) }>
 					<div class="w-1/2 h-[200%] bg-white -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default"></div>
 					<div class="w-3/5 h-[200%] bg-white/50 -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default"></div>
 					<div class="absolute text-slate-900 font-geist max-w-[250px] h-full m-4">
@@ -35,43 +37,50 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 						<div class="absolute bottom-0 text-slate-900 text-sm mb-6 cursor-default" contenteditable="false">POWERED BY NETFLIXIFY</div>
 					</div>
 				</div>
-				<input type="file" hidden="true" name="imgSrc"/>
+				<input type="file" hidden="true" name="imgFile"/>
+				<input type="text" hidden="true" name="imgSrc"/>
 				<input type="text" hidden="true" name="title"/>
 				<input type="text" hidden="true" name="subtitle"/>
 				<input type="text" hidden="true" name="categories"/>
 			</div>
-			<button id="saveBtn" class="bg-slate-900 text-white px-4 py-2 rounded-sm my-4 w-[720px]">Save as image</button>
+			<div id="btn-container" class="my-4 w-full flex gap-4">
+				<a href="/thumbnail" class="bg-slate-900 text-white px-4 py-2 rounded-sm w-full text-center">Reset</a>
+				<button id="saveBtn" class="bg-slate-900 text-white px-4 py-2 rounded-sm w-full">Download</button>
+			</div>
 		</form>
 		<script>
 				const template = document.getElementById("thumbnail-template");
 				const form = document.getElementById("thumbnail-form");
-				const [imgSrc, title, subtitle, categories] = form;
-				const saveBtn = document.getElementById("saveBtn");
-				const thumbnailContainer = document.getElementById("thumbnail-container");
+				const [imgFile, imgSrc, title, subtitle, categories] = form;
 
-				template.addEventListener("click", (e) => e.target.id=="thumbnail-template" && imgSrc.click());
+				template.addEventListener("click", (e) => e.target.id=="thumbnail-template" && imgFile.click());
 	
-				imgSrc.addEventListener("change", (e) => {
-				  const [file] = imgSrc.files
-				  if (file) {
-				    template.style.backgroundImage = "url("+URL.createObjectURL(file)+")";
-				  }
+				imgFile.addEventListener("change", (e) => {
+				  	const [file] = imgFile.files
+				  	if (file) {
+				  	  template.style.backgroundImage = "url("+URL.createObjectURL(file)+")";
+				  	}
 				});
 
-				saveBtn.addEventListener("click", () => {
+				document.getElementById("saveBtn").addEventListener("click", (e) => {
 					title.value = document.getElementById("title").innerText;
 					subtitle.value = document.getElementById("subtitle").innerText;
 					categories.value = document.getElementById("categories").innerText.split("\n").join(",");
-					saveBtn.innerHTML = "Loading..."
+					if (imgFile.files.length==0) {
+						imgSrc.value = template.getAttribute("imgSrc-data");
+					}
+					e.target.innerHTML = "Loading.."
 				})
 
 				let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
 				if (isMobile) {
-				  // User is accessing the page on a mobile device
-				  console.log("Mobile device detected");
-				  thumbnailContainer.classList.replace("w-[720px]", "w-screen");
-				  form.classList.add("mx-auto");
+				 	 // User is accessing the page on a mobile device
+				  	console.log("Mobile device detected");
+					const container = document.getElementById("btn-container");
+					container.style.flexDirection = "column";
+					container.style.padding = "0 1rem";
+					container.childNodes.forEach((n)=> {if(n.style)n.style.fontSize = "2rem"});
 				} else {
 				  // User is accessing the page on a desktop device
 				  console.log("Desktop device detected");
@@ -80,12 +89,38 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 	}
 }
 
-templ DownloadThumbnail(imgSrc string, fileName string) {
+templ DownloadThumbnail(imgSrc string, fileName string, url string) {
 	@Base() {
-		<img
-			src={ imgSrc }
-			alt={ fileName }
-		/>
-		<a href={ templ.SafeURL(imgSrc) } download={ fileName } class="bg-slate-900 text-white text-center px-4 py-2 rounded-sm my-4 w-[720px] block">Download</a>
+		<div class="my-4 w-[720px] flex gap-4">
+			<a href={ templ.SafeURL(url) } class="bg-slate-900 text-white px-4 py-2 rounded-sm w-full text-center">Go Back</a>
+			<button id="saveBtn" imgSrc-data={ imgSrc } fileName-data={ fileName } class="bg-slate-900 text-white px-4 py-2 rounded-sm w-full">Loading...</button>
+		</div>
+		<script>
+				const saveBtn= document.getElementById("saveBtn")
+				saveBtn.addEventListener("click", (e) => {
+					e.preventDefault()
+					
+					fetch(saveBtn.getAttribute("imgSrc-data"))
+		        	    .then((response) => 
+		        	    {
+		        	        return response.blob()
+		        	    })
+		        	    .then((blob) =>
+		        	    {
+		        	        const url = URL.createObjectURL(blob)
+							const link = document.createElement('a')
+		        	        link.href = url
+		        	        link.download = saveBtn.getAttribute("fileName-data")
+		        	        document.body.appendChild(link)
+							link.click()
+		        	        document.body.removeChild(link)
+		        	        URL.revokeObjectURL(url)
+		        	        saveBtn.innerHTML = "Download Again"
+		        	    })
+		        	    .catch(console.error)
+				})
+
+				saveBtn.click();
+		</script>
 	}
 }

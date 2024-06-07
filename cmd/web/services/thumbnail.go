@@ -4,19 +4,17 @@ import (
 	"bytes"
 	"context"
 	"crypto/md5"
-	"encoding/base64"
 	"encoding/hex"
-	"image/png"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/lampnick/doctron-client-go"
 	"github.com/linhtutkyawdev/netflixify/cmd/web/components"
-	"github.com/oliamb/cutter"
 
 	imgBB "github.com/JohnNON/ImgBB"
 )
@@ -27,44 +25,31 @@ const (
 
 	// doctron
 	// https://doctron-latest.onrender.com
-	doctron_host    = "http://0.0.0.0:8080"
-	doctronUsername = "doctron"
-	doctronPassword = "lampnick"
+	host = "http://0.0.0.0"
 
 	// wev
 	temp_file     = "tmp.png"
 	defaultImgSrc = "assets/img/bg.jpeg"
-	host          = "http://0.0.0.0:3000"
 )
 
 func ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
 	imgSrc := ""
-	file, _, _ := r.FormFile("imgSrc")
+	file, _, _ := r.FormFile("imgFile")
 	if file != nil {
-		println("\n\n\n\nNotNil!\n\n\n\n\n\n")
 		buf := bytes.NewBuffer(nil)
 		if _, err := io.Copy(buf, file); err != nil {
 			log.Fatal(err)
 		}
 		imgSrc = uploadToImgbb(buf.Bytes(), 60).Data.Image.URL
 		defer file.Close()
+	} else {
+		imgSrc = r.FormValue("imgSrc")
 	}
+	originalUrl := "/thumbnail?imgSrc=" + imgSrc + "&title=" + r.FormValue("title") + "&subtitle=" + r.FormValue("subtitle") + "&categories=" + r.FormValue("categories")
+	thumbnailUrl := createThumbnail(host + ":" + os.Getenv("PORT") + originalUrl).Data.Image.URL
 
-	thumbnailUrl := createThumbnail(host + "/thumbnail?imgSrc=" + imgSrc + "&title=" + r.FormValue("title") + "&subtitle=" + r.FormValue("subtitle") + "&categories=" + r.FormValue("categories")).Data.Image.URL
-
-	res, err := http.Get(thumbnailUrl)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer res.Body.Close()
-
-	buf := bytes.NewBuffer(nil)
-	if _, err := io.Copy(buf, res.Body); err != nil {
-		log.Fatal(err)
-	}
-
-	component := components.DownloadThumbnail("data:image/png;base64, "+base64.StdEncoding.EncodeToString(buf.Bytes()), strings.ToLower(strings.ReplaceAll(r.FormValue("title"), " ", "_")))
-	err = component.Render(r.Context(), w)
+	component := components.DownloadThumbnail(thumbnailUrl, strings.ToLower(strings.ReplaceAll(r.FormValue("title"), " ", "")), originalUrl)
+	err := component.Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Fatalf("Error rendering in CaptureWebHandler: %e", err)
@@ -72,9 +57,15 @@ func ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createThumbnail(url string) imgBB.Response {
-	client := doctron.NewClient(context.Background(), doctron_host, doctronUsername, doctronPassword)
+	client := doctron.NewClient(context.Background(), host+":"+os.Getenv("DOCTRON_PORT"), os.Getenv("DOCTRON_USERNAME"), os.Getenv("DOCTRON_PASSWORD"))
 	req := doctron.NewDefaultHTML2ImageRequestDTO()
 	req.ConvertURL = url
+	req.CustomClip = true
+	req.ClipX = 0
+	req.ClipY = 0
+	req.ClipWidth = 720
+	req.ClipHeight = 405
+	req.ClipScale = 1.0
 
 	// url to img
 	response, err := client.HTML2Image(req)
@@ -82,30 +73,7 @@ func createThumbnail(url string) imgBB.Response {
 		log.Fatal(err)
 	}
 
-	img, err := png.Decode(bytes.NewReader(response.Data))
-
-	if err != nil {
-		log.Fatal("Cannot decode image:", err)
-	}
-
-	cImg, err := cutter.Crop(img, cutter.Config{
-		Height: 405, // height in pixel or Y ratio(see Ratio Option below)
-		Width:  720, // width in pixel or X ratio
-		// Mode:    cutter.TopLeft,      // Accepted Mode: TopLeft, Centered
-		// Anchor:  image.Point{10, 10}, // Position of the top left point
-		// Options: 0,                   // Accepted Option: Ratio
-	})
-	if err != nil {
-		log.Fatal("Cannot crop image:", err)
-	}
-
-	buf := bytes.NewBuffer(nil)
-	err = png.Encode(buf, cImg)
-	if err != nil {
-		log.Fatal("Cannot encode image:", err)
-	}
-
-	res := uploadToImgbb(buf.Bytes(), 60*60)
+	res := uploadToImgbb(response.Data, 60*60)
 
 	return res
 }
