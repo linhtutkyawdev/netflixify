@@ -40,7 +40,7 @@ func ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
 		if _, err := io.Copy(buf, file); err != nil {
 			log.Fatal(err)
 		}
-		imgSrc = uploadToImgbb(buf.Bytes(), 60).Data.Image.URL
+		imgSrc = uploadToImgbb(buf.Bytes(), 5*60).Data.Image.URL
 		defer file.Close()
 	} else {
 		imgSrc = r.FormValue("imgSrc")

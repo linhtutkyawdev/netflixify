@@ -1,9 +1,5 @@
 package components
 
-css bgImg(src string) {
-	background-image: { "url("+src+")" };
-}
-
 templ Thumbnail(imgSrc string, title string, subTitle string, categories []string) {
 	@Base() {
 		<form
@@ -16,26 +12,25 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 		>
 			<div
 				id="thumbnail-container"
-				class="w-full aspect-video overflow-hidden"
+				class="w-full aspect-video overflow-hidden relative"
 				contenteditable
 			>
-				<div id="thumbnail-template" imgSrc-data={ imgSrc } class={ "w-full h-full relative bg-cover overflow-hidden cursor-pointer", bgImg(imgSrc) }>
-					<div class="w-1/2 h-[200%] bg-white -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default"></div>
-					<div class="w-3/5 h-[200%] bg-white/50 -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default"></div>
-					<div class="absolute text-slate-900 font-geist max-w-[250px] h-full m-4">
-						<div class="relative w-full h-full">
-							<h1 id="title" class="text-6xl font-semibold my-8 cursor-text">
-								{ title }
-							</h1>
-							<p id="subtitle" class="mb-4 text-2xl font-semibold border-b-2 py-4 cursor-text">{ subTitle }</p>
-							<div id="categories" class="flex flex-wrap gap-1 w-full">
-								for _,category := range categories {
-									<span class="bg-indigo-400/90 text-white px-2 rounded-full cursor-text">{ category }</span>
-								}
-							</div>
+				<img id="bgImg" src={ imgSrc } src-data={ imgSrc } class="absolute w-full h-full object-cover cursor-pointer"/>
+				<div class="w-1/2 h-[200%] bg-white -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default"></div>
+				<div class="w-3/5 h-[200%] bg-white/50 -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default"></div>
+				<div class="absolute text-slate-900 font-geist max-w-[250px] h-full m-4">
+					<div class="relative w-full h-full">
+						<h1 id="title" class="text-6xl font-semibold my-8 cursor-text">
+							{ title }
+						</h1>
+						<p id="subtitle" class="mb-4 text-2xl font-semibold border-b-2 py-4 cursor-text">{ subTitle }</p>
+						<div id="categories" class="flex flex-wrap gap-1 w-full">
+							for _,category := range categories {
+								<span class="bg-indigo-400/90 text-white px-2 rounded-full cursor-text">{ category }</span>
+							}
 						</div>
-						<div class="absolute bottom-0 text-slate-900 text-sm mb-6 cursor-default" contenteditable="false">POWERED BY NETFLIXIFY</div>
 					</div>
+					<div class="absolute bottom-0 text-slate-900 text-sm mb-6 cursor-default" contenteditable="false">POWERED BY NETFLIXIFY</div>
 				</div>
 				<input type="file" hidden="true" name="imgFile"/>
 				<input type="text" hidden="true" name="imgSrc"/>
@@ -49,16 +44,16 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 			</div>
 		</form>
 		<script>
-				const template = document.getElementById("thumbnail-template");
+				const bgImg = document.getElementById("bgImg");
 				const form = document.getElementById("thumbnail-form");
 				const [imgFile, imgSrc, title, subtitle, categories] = form;
 
-				template.addEventListener("click", (e) => e.target.id=="thumbnail-template" && imgFile.click());
+				bgImg.addEventListener("click", (e) => e.target.id=="bgImg" && imgFile.click());
 	
 				imgFile.addEventListener("change", (e) => {
 				  	const [file] = imgFile.files
 				  	if (file) {
-				  	  template.style.backgroundImage = "url("+URL.createObjectURL(file)+")";
+				  	  bgImg.src = URL.createObjectURL(file);
 				  	}
 				});
 
@@ -67,7 +62,7 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 					subtitle.value = document.getElementById("subtitle").innerText;
 					categories.value = document.getElementById("categories").innerText.split("\n").join(",");
 					if (imgFile.files.length==0) {
-						imgSrc.value = template.getAttribute("imgSrc-data");
+						imgSrc.value = bgImg.getAttribute("src-data");
 					}
 					e.target.innerHTML = "Loading.."
 				})
@@ -117,7 +112,14 @@ templ DownloadThumbnail(imgSrc string, fileName string, url string) {
 		        	        URL.revokeObjectURL(url)
 		        	        saveBtn.innerHTML = "Download Again"
 		        	    })
-		        	    .catch(console.error)
+		        	    .catch(console.error);
+
+					document.getElementById("thumbnail-container").contentEditable=false;
+					document.getElementById("title").classList.remove("cursor-text");
+					document.getElementById("subtitle").classList.remove("cursor-text");
+					document.getElementById("categories").childNodes.forEach((n)=> n.classList.remove("cursor-text"));
+					bgImg.classList.remove("cursor-pointer");
+					imgFile.disabled = true;
 				})
 
 				saveBtn.click();
