@@ -12,23 +12,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/chromedp/chromedp"
 	"github.com/labstack/echo/v4"
-	"github.com/lampnick/doctron-client-go"
 	"github.com/linhtutkyawdev/netflixify/cmd/web/components"
 
 	imgBB "github.com/JohnNON/ImgBB"
 )
 
 const (
-	// imgBB
-	imgBB_key = "3aa950d66034374fe3e87df0f6a1cbc5"
-
-	// doctron
-	// https://doctron-latest.onrender.com
-	host = "http://0.0.0.0"
-
-	// wev
-	temp_file     = "tmp.png"
+	imgBB_key     = "3aa950d66034374fe3e87df0f6a1cbc5"
 	defaultImgSrc = "assets/img/bg.jpeg"
 )
 
@@ -46,7 +38,8 @@ func ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
 		imgSrc = r.FormValue("imgSrc")
 	}
 	originalUrl := "/thumbnail?imgSrc=" + imgSrc + "&title=" + r.FormValue("title") + "&subtitle=" + r.FormValue("subtitle") + "&categories=" + r.FormValue("categories")
-	thumbnailUrl := createThumbnail(host + ":" + os.Getenv("PORT") + originalUrl).Data.Image.URL
+
+	thumbnailUrl := screenshotAndUplload(os.Getenv("URL")+originalUrl, `#thumbnail-container`).Data.Image.URL
 
 	component := components.DownloadThumbnail(thumbnailUrl, strings.ToLower(strings.ReplaceAll(r.FormValue("title"), " ", "")), originalUrl)
 	err := component.Render(r.Context(), w)
@@ -54,28 +47,6 @@ func ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Fatalf("Error rendering in CaptureWebHandler: %e", err)
 	}
-}
-
-func createThumbnail(url string) imgBB.Response {
-	client := doctron.NewClient(context.Background(), host+":"+os.Getenv("DOCTRON_PORT"), os.Getenv("DOCTRON_USERNAME"), os.Getenv("DOCTRON_PASSWORD"))
-	req := doctron.NewDefaultHTML2ImageRequestDTO()
-	req.ConvertURL = url
-	req.CustomClip = true
-	req.ClipX = 0
-	req.ClipY = 0
-	req.ClipWidth = 720
-	req.ClipHeight = 405
-	req.ClipScale = 1.0
-
-	// url to img
-	response, err := client.HTML2Image(req)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	res := uploadToImgbb(response.Data, 60*60)
-
-	return res
 }
 
 func uploadToImgbb(bytes []byte, exp uint64) imgBB.Response {
@@ -126,3 +97,28 @@ func ThumbnailHandler(c echo.Context) error {
 }
 
 // ?title=One%20Piece&subtitle=Rating+%3A+9.5&categories=Anime,Series,Shounen,Action,Comedy&imgSrc=assets%2Fimg%2Fbg.jpeg
+
+func screenshotAndUplload(url string, sel string) imgBB.Response {
+	// create context
+	ctx, cancel := chromedp.NewContext(
+		context.Background(),
+		// chromedp.WithDebugf(log.Printf),
+	)
+	defer cancel()
+
+	// capture screenshot of an element
+	var buf []byte
+	if err := chromedp.Run(ctx, elementScreenshot(url, sel, &buf)); err != nil {
+		log.Fatal(err)
+	}
+
+	return uploadToImgbb(buf, 60*60)
+}
+
+// elementScreenshot takes a screenshot of a specific element.
+func elementScreenshot(urlstr, sel string, res *[]byte) chromedp.Tasks {
+	return chromedp.Tasks{
+		chromedp.Navigate(urlstr),
+		chromedp.Screenshot(sel, res, chromedp.NodeVisible),
+	}
+}

@@ -4,44 +4,41 @@
 ## Build the application from source
 ##
 
-FROM golang:latest AS build-stage
+FROM golang:latest AS build
 
 WORKDIR /app
 
 COPY . ./
 
-RUN go mod download
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./netflixify ./cmd/api/main.go
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /netflixify ./cmd/api/main.go
+#
+# Run the tests in the container
+#
 
-RUN cd ./doctron && \
-    go mod download && \
-    CGO_ENABLED=0 GOOS=linux go build -o /doctron
-
-##
-## Run the tests in the container
-##
-
-FROM build-stage
+FROM build
 RUN go test -v ./tests
 
 ##
 ## Deploy the application binary into a lean image
 ##
 
+# final image
+# https://github.com/chromedp/docker-headless-shell#using-as-a-base-image
+FROM chromedp/headless-shell:latest
 
-FROM lampnick/runtime:chromium-alpine
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+    ca-certificates dumb-init fonts-noto fonts-noto-cjk \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/
 
-WORKDIR /
+COPY --from=build /app/netflixify /usr/local/bin
 
-COPY --from=build-stage /netflixify /netflixify
-COPY --from=build-stage /doctron /doctron
-COPY --from=build-stage /app/doctron/conf/default.yaml /doctron.yaml
-COPY --from=build-stage /app/run.sh /run.sh
-RUN chmod +x /run.sh
-
+ENV URL https://netflixify.onrender.com
+# ENV PORT 3000
 EXPOSE $PORT
 
-EXPOSE 8080
-
-CMD [ "./run.sh" ]
+ENTRYPOINT ["dumb-init", "--"]
+CMD [ "netflixify" ]
