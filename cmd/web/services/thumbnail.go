@@ -21,7 +21,7 @@ import (
 
 const (
 	imgBB_key     = "3aa950d66034374fe3e87df0f6a1cbc5"
-	defaultImgSrc = "assets/img/bg.jpeg"
+	defaultImgSrc = "/assets/images/thumbnail-bg.jpeg"
 )
 
 func ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +42,7 @@ func ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
 	thumbnailUrl := screenshotAndUplload(os.Getenv("URL")+originalUrl, `#thumbnail-container`).Data.Image.URL
 
 	component := components.DownloadThumbnail(thumbnailUrl, strings.ToLower(strings.ReplaceAll(r.FormValue("title"), " ", "")), originalUrl)
+
 	err := component.Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -95,8 +96,6 @@ func ThumbnailHandler(c echo.Context) error {
 	component := components.Thumbnail(imgSrc, title, subtitle, categories)
 	return component.Render(c.Request().Context(), c.Response())
 }
-
-// ?title=One%20Piece&subtitle=Rating+%3A+9.5&categories=Anime,Series,Shounen,Action,Comedy&imgSrc=assets%2Fimg%2Fbg.jpeg
 
 func screenshotAndUplload(url string, sel string) imgBB.Response {
 	// create context

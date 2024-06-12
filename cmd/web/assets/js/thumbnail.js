@@ -1,61 +1,23 @@
 
-const template = document.getElementById("thumbnail-template");
-const imgSrc = document.getElementsByName("imgSrc")[0];
-const title = document.getElementById("title");
-const downloadBtn = document.getElementById("downloadBtn");
-const thumbnailContainer = document.getElementById("thumbnail-container");
+const bgImg = document.getElementById("bgImg");
+const form = document.getElementById("thumbnail-form");
+const [imgFile, imgSrc, title, subtitle, categories] = form;
+bgImg.addEventListener("click", (e) => e.target.id == "bgImg" && imgFile.click());
 
-template.addEventListener("click", (e) => e.target.id == "thumbnail-template" && imgSrc.click());
-
-imgSrc.addEventListener("change", (e) => {
-    const [file] = imgSrc.files
+imgFile.addEventListener("change", (e) => {
+    const [file] = imgFile.files
     if (file) {
-        template.style.backgroundImage = "url(" + URL.createObjectURL(file) + ")";
+        bgImg.src = URL.createObjectURL(file);
     }
 });
 
-downloadBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    alert(HOST)
-    fetch(":8080/convert/html2image?u=kode&p=31545&url=http://localhost:3000/thumbnail&customClip=true&clipX=0&clipY=0&clipWidth=720&clipHeight=405&clipScale=1&format=png")
-        .then((response) => {
-            return response.blob()
-        })
-        .then((blob) => {
-            console.log('Blob:', blob)
-            const url = URL
-
-                .createObjectURL(blob)
-
-            const link = document
-                .createElement('a')
-            link
-                .href = url
-            link
-                .download = title.textContent.toLowerCase().replace(/\s/g, '') + '.png'
-            // The name for the downloaded file
-            document
-                .body
-                .appendChild(link)
-            link
-                .click()
-            document
-                .body
-                .removeChild(link)
-
-            URL.revokeObjectURL(url)
-        })
-        .catch(console.error)
+document.getElementById("saveBtn").addEventListener("click", (e) => {
+    title.value = document.getElementById("title").innerText;
+    subtitle.value = document.getElementById("subtitle").innerText;
+    categories.value = document.getElementById("categories").innerText.split("\n").join(",");
+    if (imgFile.files.length == 0) {
+        imgSrc.value = bgImg.getAttribute("src-data");
+    }
+    e.target.innerHTML = "Loading.."
 })
 
-// let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-// if (isMobile) {
-//   // User is accessing the page on a mobile device
-//   console.log("Mobile device detected");
-//   thumbnailContainer.classList.replace("w-[720px]", "w-screen");
-//   form.classList.add("mx-auto");
-// } else {
-//   // User is accessing the page on a desktop device
-//   console.log("Desktop device detected");
-// }

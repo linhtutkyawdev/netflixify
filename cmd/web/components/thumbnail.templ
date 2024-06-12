@@ -1,128 +1,63 @@
 package components
 
+templ Thumbnail_Head() {
+	<title>Thumbnail</title>
+	@LogoAnimationHead()
+}
+
 templ Thumbnail(imgSrc string, title string, subTitle string, categories []string) {
-	@Base() {
-		<form
-			id="thumbnail-form"
-			hx-encoding="multipart/form-data"
-			hx-post="/thumbnail"
-			hx-target="#btn-container"
-			hx-swap="outerHTML"
-			class="w-[720px]"
-		>
-			<div
-				id="thumbnail-container"
-				class="w-full aspect-video overflow-hidden relative"
-				contenteditable
-			>
-				<img id="bgImg" src={ imgSrc } src-data={ imgSrc } class="absolute w-full h-full object-cover cursor-pointer"/>
-				<div class="w-1/2 h-[200%] bg-white -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default"></div>
-				<div class="w-3/5 h-[200%] bg-white/50 -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default"></div>
-				<div class="absolute text-slate-900 font-geist max-w-[250px] h-full m-4">
-					<div class="relative w-full h-full">
-						<h1 id="title" class="text-6xl font-semibold my-8 cursor-text">
-							{ title }
-						</h1>
-						<p id="subtitle" class="mb-4 text-2xl font-semibold border-b-2 py-4 cursor-text">{ subTitle }</p>
-						<div id="categories" class="flex flex-wrap gap-1 w-full">
-							for _,category := range categories {
-								<span class="bg-indigo-400/90 text-white px-2 rounded-full cursor-text">{ category }</span>
-							}
+	@Base(Thumbnail_Head()) {
+		@LogoAnimation()
+		<section class="w-max md:w-full flex justify-center items-center pt-24">
+			<div class="w-max p-4">
+				<form
+					id="thumbnail-form"
+					hx-encoding="multipart/form-data"
+					hx-post="/thumbnail"
+					hx-target="#btn-container"
+					class="w-[720px]"
+				>
+					<div
+						id="thumbnail-container"
+						class="w-full aspect-video overflow-hidden relative shadow-lg"
+						contenteditable
+					>
+						<img id="bgImg" src={ imgSrc } src-data={ imgSrc } class="absolute w-full h-full object-cover cursor-pointer"/>
+						<div class="w-1/2 h-[200%] bg-white -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default" contenteditable="false"></div>
+						<div class="w-3/5 h-[200%] bg-white/50 -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default" contenteditable="false"></div>
+						<div class="absolute text-slate-900 font-geist max-w-[250px] h-full m-4">
+							<div class="relative w-full h-full">
+								<h1 id="title" class="text-6xl font-semibold my-8 cursor-text">
+									{ title }
+								</h1>
+								<p id="subtitle" class="mb-4 text-2xl font-semibold border-b-2 py-4 cursor-text">{ subTitle }</p>
+								<div id="categories" class="flex flex-wrap gap-1 w-full max-h-20 overflow-hidden">
+									for _,category := range categories {
+										<span class="bg-indigo-400/90 text-white px-2 rounded-full cursor-text">{ category }</span>
+									}
+								</div>
+							</div>
+							<div class="absolute bottom-0 text-slate-900 text-lg mb-6 cursor-default font-bebas" contenteditable="false">POWERED BY NETFLIXIFY</div>
 						</div>
+						<input type="file" hidden="true" name="imgFile"/>
+						<input type="text" hidden="true" name="imgSrc"/>
+						<input type="text" hidden="true" name="title"/>
+						<input type="text" hidden="true" name="subtitle"/>
+						<input type="text" hidden="true" name="categories"/>
 					</div>
-					<div class="absolute bottom-0 text-slate-900 text-sm mb-6 cursor-default" contenteditable="false">POWERED BY NETFLIXIFY</div>
-				</div>
-				<input type="file" hidden="true" name="imgFile"/>
-				<input type="text" hidden="true" name="imgSrc"/>
-				<input type="text" hidden="true" name="title"/>
-				<input type="text" hidden="true" name="subtitle"/>
-				<input type="text" hidden="true" name="categories"/>
+					<div id="btn-container" class="my-4 flex gap-4 text-[1.75rem] sm:text-[1.25rem] flex-col md:text-base md:flex-row">
+						<a href="/thumbnail" class="bg-slate-900 text-white py-4 sm:py-2 rounded-sm w-full text-center">Reset</a>
+						<button id="saveBtn" class="bg-slate-900 text-white py-4 sm:py-2 rounded-sm w-full">Download</button>
+					</div>
+				</form>
+				<script src="assets/js/thumbnail.js"></script>
 			</div>
-			<div id="btn-container" class="my-4 w-full flex gap-4">
-				<a href="/thumbnail" class="bg-slate-900 text-white px-4 py-2 rounded-sm w-full text-center">Reset</a>
-				<button id="saveBtn" class="bg-slate-900 text-white px-4 py-2 rounded-sm w-full">Download</button>
-			</div>
-		</form>
-		<script>
-				const bgImg = document.getElementById("bgImg");
-				const form = document.getElementById("thumbnail-form");
-				const [imgFile, imgSrc, title, subtitle, categories] = form;
-
-				bgImg.addEventListener("click", (e) => e.target.id=="bgImg" && imgFile.click());
-	
-				imgFile.addEventListener("change", (e) => {
-				  	const [file] = imgFile.files
-				  	if (file) {
-				  	  bgImg.src = URL.createObjectURL(file);
-				  	}
-				});
-
-				document.getElementById("saveBtn").addEventListener("click", (e) => {
-					title.value = document.getElementById("title").innerText;
-					subtitle.value = document.getElementById("subtitle").innerText;
-					categories.value = document.getElementById("categories").innerText.split("\n").join(",");
-					if (imgFile.files.length==0) {
-						imgSrc.value = bgImg.getAttribute("src-data");
-					}
-					e.target.innerHTML = "Loading.."
-				})
-
-				let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-				if (isMobile) {
-				 	 // User is accessing the page on a mobile device
-				  	console.log("Mobile device detected");
-					const container = document.getElementById("btn-container");
-					container.style.flexDirection = "column";
-					container.style.padding = "0 1rem";
-					container.childNodes.forEach((n)=> {if(n.style)n.style.fontSize = "2rem"});
-				} else {
-				  // User is accessing the page on a desktop device
-				  console.log("Desktop device detected");
-				}
-			</script>
+		</section>
 	}
 }
 
 templ DownloadThumbnail(imgSrc string, fileName string, url string) {
-	@Base() {
-		<div class="my-4 w-[720px] flex gap-4">
-			<a href={ templ.SafeURL(url) } class="bg-slate-900 text-white px-4 py-2 rounded-sm w-full text-center">Go Back</a>
-			<button id="saveBtn" imgSrc-data={ imgSrc } fileName-data={ fileName } class="bg-slate-900 text-white px-4 py-2 rounded-sm w-full">Loading...</button>
-		</div>
-		<script>
-				const saveBtn= document.getElementById("saveBtn")
-				saveBtn.addEventListener("click", (e) => {
-					e.preventDefault()
-					
-					fetch(saveBtn.getAttribute("imgSrc-data"))
-		        	    .then((response) => 
-		        	    {
-		        	        return response.blob()
-		        	    })
-		        	    .then((blob) =>
-		        	    {
-		        	        const url = URL.createObjectURL(blob)
-							const link = document.createElement('a')
-		        	        link.href = url
-		        	        link.download = saveBtn.getAttribute("fileName-data")
-		        	        document.body.appendChild(link)
-							link.click()
-		        	        document.body.removeChild(link)
-		        	        URL.revokeObjectURL(url)
-		        	        saveBtn.innerHTML = "Download Again"
-		        	    })
-		        	    .catch(console.error);
-
-					document.getElementById("thumbnail-container").contentEditable=false;
-					document.getElementById("title").classList.remove("cursor-text");
-					document.getElementById("subtitle").classList.remove("cursor-text");
-					document.getElementById("categories").childNodes.forEach((n)=> n.classList.remove("cursor-text"));
-					bgImg.classList.remove("cursor-pointer");
-					imgFile.disabled = true;
-				})
-
-				saveBtn.click();
-		</script>
-	}
+	<a href={ templ.SafeURL(url) } class="bg-slate-900 text-white py-4 sm:py-2 rounded-sm w-full text-center">Go Back</a>
+	<button id="saveBtn" imgSrc-data={ imgSrc } fileName-data={ fileName } class="bg-slate-900 text-white py-4 sm:py-2 rounded-sm w-full">Loading...</button>
+	<script src="assets/js/downloadThumbnail.js"></script>
 }

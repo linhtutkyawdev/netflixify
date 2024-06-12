@@ -1,0 +1,25 @@
+package components
+
+templ LogoAnimationHead() {
+	<link href="assets/css/logo_animation.css" rel="stylesheet"/>
+}
+
+templ LogoAnimation() {
+	<div id="loader" class="font-bebas flex items-center justify-center bg-black fixed w-full h-screen overflow-hidden">
+		<div>
+			<div class="netflix-logo">
+				<span></span>
+				<span></span>
+				<span></span>
+				<div id="box-loader">
+					<div id="shadow"></div>
+					<div id="box"></div>
+				</div>
+			</div>
+			<h3 class="relative text-center text-white text-[5rem] tracking-[10px] overflow-hidden animate-[expand_3s_cubic-bezier(0.215,_0.61,_0.355,_1)_both]">
+				NETFLIXIFY
+			</h3>
+		</div>
+	</div>
+	<script src="assets/js/loader.js"></script>
+}

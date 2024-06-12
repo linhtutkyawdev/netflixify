@@ -4,7 +4,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        geist: 'Geist'
+        geist: 'Geist',
+        bebas: 'Bebas Neue',
+        netflix: 'Netflix Sans',
       }
     },
   },
