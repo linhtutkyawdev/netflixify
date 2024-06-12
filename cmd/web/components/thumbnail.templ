@@ -1,13 +1,31 @@
 package components
 
 templ Thumbnail_Head() {
+	<meta name="viewport" content="width=752, initial-scale=1"/>
 	<title>Thumbnail</title>
 	@LogoAnimationHead()
 }
 
-templ Thumbnail(imgSrc string, title string, subTitle string, categories []string) {
+templ Thumbnail(tg string, imgSrc string, title string, subTitle string, categories []string) {
 	@Base(Thumbnail_Head()) {
 		@LogoAnimation()
+		<div class="absolute top-0 w-screen min-w-[752px]">
+			<div class="container flex w-full justify-between mx-auto p-4 md:px-28">
+				<div>
+					<a href="/">
+						<img alt="netflixify" class="w-36 md:w-48" src="/assets/images/netflixify_logo.png"/>
+					</a>
+				</div>
+				<div>
+					<script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="netflixify_bot" data-size="medium" data-radius="4" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+					<script type="text/javascript">
+  					function onTelegramAuth(user) {
+					alert('Logged in as ' + user.first_name + ' ' + user.last_name + ' (' + user.id + (user.username ? ', @' + user.username : '') + ')');
+					}
+				</script>
+				</div>
+			</div>
+		</div>
 		<section class="w-max md:w-full flex justify-center items-center pt-24">
 			<div class="w-max p-4">
 				<form
@@ -40,14 +58,15 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 							<div class="absolute bottom-0 text-slate-900 text-lg mb-6 cursor-default font-bebas" contenteditable="false">POWERED BY NETFLIXIFY</div>
 						</div>
 						<input type="file" hidden="true" name="imgFile"/>
+						<input type="text" hidden="true" name="tg" value={ tg }/>
 						<input type="text" hidden="true" name="imgSrc"/>
 						<input type="text" hidden="true" name="title"/>
 						<input type="text" hidden="true" name="subtitle"/>
 						<input type="text" hidden="true" name="categories"/>
 					</div>
 					<div id="btn-container" class="my-4 flex gap-4 text-[1.75rem] sm:text-[1.25rem] flex-col md:text-base md:flex-row">
-						<a href="/thumbnail" class="bg-slate-900 text-white py-4 sm:py-2 rounded-sm w-full text-center">Reset</a>
-						<button id="saveBtn" class="bg-slate-900 text-white py-4 sm:py-2 rounded-sm w-full">Download</button>
+						<a href="/thumbnail" class="bg-gray-600 text-white py-4 sm:py-2 rounded-sm w-full text-center">Reset</a>
+						<button id="saveBtn" class="bg-sky-600 text-white py-4 sm:py-2 rounded-sm w-full">Download</button>
 					</div>
 				</form>
 				<script src="assets/js/thumbnail.js"></script>
@@ -57,7 +76,8 @@ templ Thumbnail(imgSrc string, title string, subTitle string, categories []strin
 }
 
 templ DownloadThumbnail(imgSrc string, fileName string, url string) {
-	<a href={ templ.SafeURL(url) } class="bg-slate-900 text-white py-4 sm:py-2 rounded-sm w-full text-center">Go Back</a>
-	<button id="saveBtn" imgSrc-data={ imgSrc } fileName-data={ fileName } class="bg-slate-900 text-white py-4 sm:py-2 rounded-sm w-full">Loading...</button>
+	<a href={ templ.SafeURL(url) } class="bg-gray-600 text-white py-4 sm:py-2 rounded-sm w-full text-center">Go Back</a>
+	<button id="saveBtn" imgSrc-data={ imgSrc } fileName-data={ fileName } class="bg-gray-600 text-white py-4 sm:py-2 rounded-sm w-full">Loading...</button>
+	<button id="sendBtn" class="bg-sky-600 text-white py-4 sm:py-2 rounded-sm w-full">Save to Telegram</button>
 	<script src="assets/js/downloadThumbnail.js"></script>
 }

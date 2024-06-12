@@ -1,7 +1,7 @@
 
 const bgImg = document.getElementById("bgImg");
 const form = document.getElementById("thumbnail-form");
-const [imgFile, imgSrc, title, subtitle, categories] = form;
+const [imgFile, _, imgSrc, title, subtitle, categories] = form;
 bgImg.addEventListener("click", (e) => e.target.id == "bgImg" && imgFile.click());
 
 imgFile.addEventListener("change", (e) => {

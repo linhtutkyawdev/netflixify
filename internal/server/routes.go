@@ -18,7 +18,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	fileServer := http.FileServer(http.FS(web.Files))
 	e.GET("/assets/*", echo.WrapHandler(fileServer))
 
-	e.GET("/", echo.WrapHandler(templ.Handler(components.Index())))
+	e.GET("/", echo.WrapHandler(templ.Handler(components.WebApp())))
 	e.GET("/api", s.ApiHandler)
 
 	e.GET("/thumbnail", services.ThumbnailHandler)

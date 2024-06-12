@@ -5,13 +5,12 @@ templ Base(Head templ.Component) {
 	<html lang="en">
 		<head>
 			<meta charset="utf-8"/>
-			<meta name="viewport" content="width=device-width, maximum-scale=1"/>
 			<script src="assets/js/htmx.min.js"></script>
 			// <script src="assets/js/hyperscript.min.js"></script>
 			<link href="assets/css/tailwind.min.css" rel="stylesheet"/>
 			@Head
 		</head>
-		<body>
+		<body class="bg-gray-950 h-full font-geist">
 			<main>
 				{ children... }
 			</main>

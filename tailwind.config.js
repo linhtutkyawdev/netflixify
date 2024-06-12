@@ -6,7 +6,6 @@ module.exports = {
       fontFamily: {
         geist: 'Geist',
         bebas: 'Bebas Neue',
-        netflix: 'Netflix Sans',
       }
     },
   },

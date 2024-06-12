@@ -41,12 +41,25 @@ func ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	thumbnailUrl := screenshotAndUplload(os.Getenv("URL")+originalUrl, `#thumbnail-container`).Data.Image.URL
 
-	component := components.DownloadThumbnail(thumbnailUrl, strings.ToLower(strings.ReplaceAll(r.FormValue("title"), " ", "")), originalUrl)
+	println()
+	println()
+	println()
+	println(r.FormValue("tg"))
+	println()
+	println()
+	println()
 
-	err := component.Render(r.Context(), w)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Fatalf("Error rendering in CaptureWebHandler: %e", err)
+	if r.FormValue("tg") != "true" {
+		component := components.DownloadThumbnail(thumbnailUrl, strings.ToLower(strings.ReplaceAll(r.FormValue("title"), " ", "")), originalUrl)
+
+		err := component.Render(r.Context(), w)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			log.Fatalf("Error rendering in CaptureWebHandler: %e", err)
+		}
+	} else {
+		// send to telegram
+		w.Write([]byte("hello"))
 	}
 }
 
@@ -76,6 +89,8 @@ func hashSum(b []byte) string {
 }
 
 func ThumbnailHandler(c echo.Context) error {
+	tg := c.QueryParam("tg")
+
 	imgSrc := c.QueryParam("imgSrc")
 	if imgSrc == "" {
 		imgSrc = defaultImgSrc
@@ -93,7 +108,7 @@ func ThumbnailHandler(c echo.Context) error {
 	if categoriesStr != "" {
 		categories = strings.Split(categoriesStr, ",")
 	}
-	component := components.Thumbnail(imgSrc, title, subtitle, categories)
+	component := components.Thumbnail(tg, imgSrc, title, subtitle, categories)
 	return component.Render(c.Request().Context(), c.Response())
 }
 
