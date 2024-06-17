@@ -6,7 +6,7 @@ templ Thumbnail_Head() {
 	@LogoAnimationHead()
 }
 
-templ Thumbnail(tg string, imgSrc string, title string, subTitle string, categories []string) {
+templ Thumbnail(id string, imgSrc string, title string, subTitle string, categories []string) {
 	@Base(Thumbnail_Head()) {
 		@LogoAnimation()
 		<div class="absolute top-0 w-screen min-w-[752px]">
@@ -58,7 +58,7 @@ templ Thumbnail(tg string, imgSrc string, title string, subTitle string, categor
 							<div class="absolute bottom-0 text-slate-900 text-lg mb-6 cursor-default font-bebas" contenteditable="false">POWERED BY NETFLIXIFY</div>
 						</div>
 						<input type="file" hidden="true" name="imgFile"/>
-						<input type="text" hidden="true" name="tg" value={ tg }/>
+						<input type="text" hidden="true" name="id" value={ id }/>
 						<input type="text" hidden="true" name="imgSrc"/>
 						<input type="text" hidden="true" name="title"/>
 						<input type="text" hidden="true" name="subtitle"/>
@@ -78,6 +78,11 @@ templ Thumbnail(tg string, imgSrc string, title string, subTitle string, categor
 templ DownloadThumbnail(imgSrc string, fileName string, url string) {
 	<a href={ templ.SafeURL(url) } class="bg-gray-600 text-white py-4 sm:py-2 rounded-sm w-full text-center">Go Back</a>
 	<button id="saveBtn" imgSrc-data={ imgSrc } fileName-data={ fileName } class="bg-gray-600 text-white py-4 sm:py-2 rounded-sm w-full">Loading...</button>
-	<button id="sendBtn" class="bg-sky-600 text-white py-4 sm:py-2 rounded-sm w-full">Save to Telegram</button>
-	<script src="assets/js/downloadThumbnail.js"></script>
+	<script src="assets/js/download.js"></script>
+}
+
+templ CloseWebApp() {
+	<script>
+		Telegram.WebApp.close();
+	</script>
 }

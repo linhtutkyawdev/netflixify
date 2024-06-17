@@ -37,6 +37,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 COPY --from=build /app/netflixify /usr/local/bin
 
 ENV URL https://netflixify.onrender.com
+ENV BOT_TOKEN=6836197587:AAHdUrYAAINPDN1V4OhS4aAFDLDTzxE_eqU
+
 # ENV PORT 3000
 EXPOSE $PORT
 

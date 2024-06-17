@@ -7,17 +7,21 @@ import (
 	"strconv"
 	"time"
 
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 type Server struct {
 	port int
+	bot  *tgbotapi.BotAPI
 }
 
 func NewServer() *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
+	bot := NewBot()
 	NewServer := &Server{
 		port: port,
+		bot:  bot,
 	}
 
 	// Declare Server config

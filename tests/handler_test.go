@@ -16,9 +16,8 @@ func TestHandler(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/api", nil)
 	resp := httptest.NewRecorder()
 	c := e.NewContext(req, resp)
-	s := &server.Server{}
 	// Assertions
-	if err := s.ApiHandler(c); err != nil {
+	if err := server.ApiHandler(c); err != nil {
 		t.Errorf("handler() error = %v", err)
 		return
 	}

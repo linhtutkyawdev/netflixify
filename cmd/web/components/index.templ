@@ -125,7 +125,7 @@ templ WebApp() {
 			<meta name="HandheldFriendly" content="True"/>
 			<meta name="robots" content="noindex,nofollow"/>
 			<title></title>
-			<script src="https://telegram.org/js/telegram-web-app.js?1"></script>
+			<script src="https://telegram.org/js/telegram-web-app.js"></script>
 			<script>
         function setThemeClass() {
             document.documentElement.className = Telegram.WebApp.colorScheme;
@@ -848,7 +848,7 @@ templ WebApp() {
             return onCallback && onCallback({error: 'This function (' + method + ') should send requests to your backend. Please, change this code to your own.'});
 
             const authData = DemoApp.initData || '';
-            fetch('/demo/api', {
+            fetch('/api', {
                 method     : 'POST',
                 body       : JSON.stringify(Object.assign(data, {
                     _auth : authData,
