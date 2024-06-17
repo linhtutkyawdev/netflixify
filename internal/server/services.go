@@ -15,9 +15,9 @@ import (
 
 	imgBB "github.com/JohnNON/ImgBB"
 	"github.com/chromedp/chromedp"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/linhtutkyawdev/netflixify/cmd/web/components"
+	"gopkg.in/telebot.v3"
 )
 
 const (
@@ -59,7 +59,8 @@ func (s *Server) ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("id") != "" {
 		id, _ := strconv.Atoi(r.FormValue("id"))
 
-		s.bot.Send(tgbotapi.NewPhoto(int64(id), tgbotapi.FileURL(thumbnailUrl)))
+		s.bot.Send(&telebot.Chat{ID: int64(id)}, "Thumbnail: "+thumbnailUrl)
+
 		component := components.CloseWebApp()
 
 		err := component.Render(r.Context(), w)
