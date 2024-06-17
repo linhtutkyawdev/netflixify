@@ -58,12 +58,16 @@ func (s *Server) ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.FormValue("id") != "" {
 		id, _ := strconv.Atoi(r.FormValue("id"))
-
-		s.bot.Send(&telebot.Chat{ID: int64(id)}, "Thumbnail: "+thumbnailUrl)
-
+		_, err := s.bot.Send(&telebot.User{ID: int64(id)}, &telebot.Photo{
+			File: telebot.FromURL(thumbnailUrl),
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			log.Fatalf("Error sending to user: %e", err)
+		}
 		component := components.CloseWebApp()
 
-		err := component.Render(r.Context(), w)
+		err = component.Render(r.Context(), w)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			log.Fatalf("Error rendering in CaptureWebHandler: %e", err)
@@ -106,6 +110,7 @@ func hashSum(b []byte) string {
 
 func ThumbnailHandler(c echo.Context) error {
 	id := c.QueryParam("tgId")
+	username := c.QueryParam("username")
 
 	imgSrc := c.QueryParam("imgSrc")
 	if imgSrc == "" {
@@ -124,7 +129,7 @@ func ThumbnailHandler(c echo.Context) error {
 	if categoriesStr != "" {
 		categories = strings.Split(categoriesStr, ",")
 	}
-	component := components.Thumbnail(id, imgSrc, title, subtitle, categories)
+	component := components.Thumbnail(id, username, imgSrc, title, subtitle, categories)
 	return component.Render(c.Request().Context(), c.Response())
 }
 

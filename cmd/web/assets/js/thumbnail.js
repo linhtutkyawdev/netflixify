@@ -21,3 +21,7 @@ document.getElementById("saveBtn").addEventListener("click", (e) => {
     e.target.innerHTML = "Loading.."
 })
 
+// if (Telegram.WebApp) {
+//     let nav = document.getElementById("nav");
+//     nav.innerHTML = Telegram.WebApp.URL
+// }
