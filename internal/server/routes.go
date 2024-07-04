@@ -19,11 +19,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	e.GET("/", echo.WrapHandler(templ.Handler(components.WebApp())))
 	e.GET("/api", ApiHandler)
+	e.GET("/video", s.VideoHandler)
 
 	e.GET("/thumbnail", ThumbnailHandler)
 	e.POST("/thumbnail", echo.WrapHandler(http.HandlerFunc(s.ThumbnailPostHandler)))
 
-	e.GET("/intro", IntroHandler)
+	e.GET("/animation", AnimationHandler)
 
 	return e
 }

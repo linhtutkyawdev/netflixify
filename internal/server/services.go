@@ -33,9 +33,23 @@ func ApiHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
-func IntroHandler(c echo.Context) error {
+func (s *Server) VideoHandler(c echo.Context) error {
+	tgId := c.QueryParam("tgId")
+	// vId := c.QueryParam("vId")
+	id, _ := strconv.Atoi(tgId)
+
+	// video := &telebot.Video{File: telebot.FromDisk("file.ogg")}
+
+	s.bot.Send(&telebot.User{ID: int64(id)}, &telebot.Video{
+		File: telebot.FromDisk("cmd/web/assets/video/onepiece.mp4"),
+	})
+	component := components.CloseWebApp()
+	return component.Render(c.Request().Context(), c.Response())
+}
+
+func AnimationHandler(c echo.Context) error {
 	href := c.QueryParam("href")
-	component := components.LetterAnimation(href)
+	component := components.Animation(href)
 	return component.Render(c.Request().Context(), c.Response())
 }
 

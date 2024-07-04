@@ -19,6 +19,7 @@ document.getElementById("saveBtn").addEventListener("click", (e) => {
         imgSrc.value = bgImg.getAttribute("src-data");
     }
     e.target.innerHTML = "Loading.."
+    LetterAnimationShowForFiveSeconds()
 })
 
 // if (Telegram.WebApp) {

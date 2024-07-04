@@ -2,10 +2,12 @@ package components
 
 templ Thumbnail_Head() {
 	<title>Thumbnail</title>
+	@LogoAnimationHead()
 }
 
 templ Thumbnail(id string, username string, imgSrc string, title string, subTitle string, categories []string) {
 	@Base(Thumbnail_Head()) {
+		@LogoAnimation()
 		@Header(username)
 		<section class="w-screen md:w-full flex justify-center items-center pt-24">
 			<form
@@ -13,6 +15,7 @@ templ Thumbnail(id string, username string, imgSrc string, title string, subTitl
 				hx-encoding="multipart/form-data"
 				hx-post="/thumbnail"
 				hx-target="#btn-container"
+				hx-indicator="#loader"
 				class="w-[720px]"
 			>
 				<div
@@ -21,9 +24,8 @@ templ Thumbnail(id string, username string, imgSrc string, title string, subTitl
 					contenteditable
 				>
 					<img id="bgImg" src={ imgSrc } src-data={ imgSrc } class="absolute w-full h-full object-cover cursor-pointer"/>
-					<div class="w-1/2 h-[200%] bg-white -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default" contenteditable="false"></div>
-					<div class="w-3/5 h-[200%] bg-white/50 -rotate-[15deg] translate-x-[-30px] translate-y-[-100px] absolute cursor-default" contenteditable="false"></div>
-					<div class="absolute text-slate-900 font-geist h-full m-1">
+					<div class="w-3/5 h-[200%] backdrop-blur-lg bg-gray-800/70 border-[#0086D4] border-r-[50px] -rotate-[12deg] translate-x-[-40px] translate-y-[-100px] absolute cursor-default" contenteditable="false"></div>
+					<div class="absolute text-white font-geist h-full m-1">
 						<div class="relative flex flex-col justify-around w-[7rem] h-[85%] min-[420px]:w-[9rem] min-[480px]:w-[10rem] min-[560px]:w-[12rem] sm:w-[15rem]">
 							<h1 id="title" class="text-2xl m-1 font-bold min-[420px]:text-3xl min-[480px]:text-4xl min-[560px]:text-5xl sm:text-6xl">
 								{ title }
@@ -31,11 +33,11 @@ templ Thumbnail(id string, username string, imgSrc string, title string, subTitl
 							<p id="subtitle" class="text-sm m-1 font-semibold border-b-2 cursor-text min-[420px]:text-base min-[480px]:text-lg min-[560px]:text-xl sm:text-3xl">{ subTitle }</p>
 							<div id="categories" class="text-[0.6rem] m-1 flex flex-wrap gap-1 max-h-20 overflow-hidden min-[420px]:text-xs min-[480px]:text-sm min-[560px]:text-base">
 								for _,category := range categories {
-									<span class="bg-indigo-400/90 text-white px-2 rounded-full cursor-text">{ category }</span>
+									<span class="bg-[#0086D4] text-white px-2 rounded-full cursor-text">{ category }</span>
 								}
 							</div>
 						</div>
-						<div class="absolute bottom-0 text-slate-900 text-sm min-w-[10rem] ml-1 mb-2 cursor-default font-bebas min-[480px]:text-base min-[560px]:text-lg sm:mb-4" contenteditable="false">POWERED BY NETFLIXIFY</div>
+						<div class="absolute bottom-0 text-sm min-w-[10rem] ml-1 mb-2 cursor-default font-bebas min-[480px]:text-base min-[560px]:text-lg sm:mb-4" contenteditable="false">POWERED BY NETFLIXIFY</div>
 					</div>
 					<input type="file" hidden="true" name="imgFile"/>
 					<input type="text" hidden="true" name="id" value={ id }/>
@@ -49,7 +51,6 @@ templ Thumbnail(id string, username string, imgSrc string, title string, subTitl
 					<button id="saveBtn" class="bg-sky-600 text-white py-2 rounded-sm w-full">Download</button>
 				</div>
 			</form>
-			<script src="https://telegram.org/js/telegram-web-app.js"></script>
 			<script src="assets/js/thumbnail.js"></script>
 		</section>
 	}
@@ -58,11 +59,38 @@ templ Thumbnail(id string, username string, imgSrc string, title string, subTitl
 templ DownloadThumbnail(imgSrc string, fileName string, url string) {
 	<a href={ templ.SafeURL(url) } class="bg-gray-600 text-white py-2 rounded-sm w-full text-center">Go Back</a>
 	<button id="saveBtn" imgSrc-data={ imgSrc } fileName-data={ fileName } class="bg-gray-600 text-white py-2 rounded-sm w-full">Loading...</button>
-	<script src="assets/js/download.js"></script>
-}
-
-templ CloseWebApp() {
 	<script>
-		Telegram.WebApp.close();
+		const saveBtn = document.getElementById("saveBtn")
+		if (saveBtn != null) {
+		    saveBtn.addEventListener("click", (e) => {
+		        e.preventDefault()
+		
+		        fetch(saveBtn.getAttribute("imgSrc-data"))
+		            .then((response) => {
+		                return response.blob()
+		            })
+		            .then((blob) => {
+		                const url = URL.createObjectURL(blob)
+		                const link = document.createElement('a')
+		                link.href = url
+		                link.download = saveBtn.getAttribute("fileName-data")
+		                document.body.appendChild(link)
+		                link.click()
+		                document.body.removeChild(link)
+		                URL.revokeObjectURL(url)
+		                saveBtn.innerHTML = "Download Again"
+		            })
+		            .catch(console.error);
+		
+		        document.getElementById("thumbnail-container").contentEditable = false;
+		        document.getElementById("title").classList.remove("cursor-text");
+		        document.getElementById("subtitle").classList.remove("cursor-text");
+		        document.getElementById("categories").childNodes.forEach((n) => n.classList.remove("cursor-text"));
+		        bgImg.classList.remove("cursor-pointer");
+		        imgFile.disabled = true;
+		    })
+		
+		    saveBtn.click();
+		}
 	</script>
 }

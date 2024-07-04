@@ -5,16 +5,15 @@ templ Base(Head templ.Component) {
 	<html lang="en">
 		<head>
 			<meta charset="utf-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-			<script src="assets/js/htmx.min.js"></script>
-			// <script src="assets/js/hyperscript.min.js"></script>
-			<script src="https://telegram.org/js/telegram-web-app.js"></script>
-			<script src="assets/js/main.js"></script>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<link href="assets/css/tailwind.min.css" rel="stylesheet"/>
+			<script src="assets/js/htmx.min.js"></script>
+			<script src="assets/js/telegram-web-app.js"></script>
+			// <script src="assets/js/hyperscript.min.js"></script>
 			@Head
 		</head>
-		<body class="bg-gray-950 h-full font-geist">
-			<main>
+		<body>
+			<main class="bg-gray-950 min-h-screen">
 				{ children... }
 			</main>
 		</body>
@@ -43,4 +42,10 @@ templ Header(username string) {
 			</div>
 		</nav>
 	</header>
+}
+
+templ CloseWebApp() {
+	<script>
+		Telegram.WebApp.close();
+	</script>
 }
