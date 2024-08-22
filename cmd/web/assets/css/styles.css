@@ -1,5 +1,5 @@
 /*=============== GOOGLE FONTS ===============*/
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
 
 /*=============== VARIABLES CSS ===============*/
 :root {
@@ -9,19 +9,21 @@
   /*Color mode HSL(hue, saturation, lightness)*/
   --white-color: hsl(0, 0%, 100%);
   --white-color-light: hsl(0, 0%, 90%);
-  --shadow-bg: linear-gradient(180deg,
-      hsla(0, 0%, 0%, 0) 60%,
-      hsla(0, 0%, 0%, .7) 78%);
+  --shadow-bg: linear-gradient(
+    180deg,
+    hsla(0, 0%, 0%, 0) 60%,
+    hsla(0, 0%, 0%, 0.7) 78%
+  );
 
   /*========== Font and typography ==========*/
   /*.5rem = 8px | 1rem = 16px ...*/
-  --body-font: "Montserrat", sans-serif;
+  --body-font: 'Montserrat', sans-serif;
   --big-font-size: 1.5rem;
   --h1-font-size: 1.5rem;
   --h2-font-size: 1.25rem;
   --h3-font-size: 1rem;
-  --normal-font-size: .938rem;
-  --small-font-size: .813rem;
+  --normal-font-size: 0.938rem;
+  --small-font-size: 0.813rem;
 
   /*========== Font weight ==========*/
   --font-regular: 400;
@@ -41,7 +43,7 @@
     --h2-font-size: 1.5rem;
     --h3-font-size: 1.25rem;
     --normal-font-size: 1rem;
-    --small-font-size: .875rem;
+    --small-font-size: 0.875rem;
   }
 }
 
@@ -142,7 +144,7 @@ img {
 }
 
 .header__actions {
-  column-gap: .75rem;
+  column-gap: 0.75rem;
   align-items: center;
   font-size: 1.25rem;
 }
@@ -154,12 +156,12 @@ img {
 
 .header__search {
   align-items: center;
-  column-gap: .5rem;
-  background-color: hsla(0, 0%, 100%, .15);
+  column-gap: 0.5rem;
+  background-color: hsla(0, 0%, 100%, 0.15);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   padding-inline: 1rem;
-  border-radius: .75rem;
+  border-radius: 0.75rem;
 }
 
 .header__search i {
@@ -179,11 +181,11 @@ img {
 
 /* Add blur header */
 .blur-header::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 1000%;
   height: 100%;
-  background-color: hsla(0, 0%, 0%, .2);
+  background-color: hsla(0, 0%, 0%, 0.2);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   top: 0;
@@ -196,7 +198,7 @@ img {
   position: fixed;
   top: 0;
   right: -100%;
-  background-color: hsla(0, 0%, 0%, .2);
+  background-color: hsla(0, 0%, 0%, 0.2);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   width: 285px;
@@ -206,7 +208,7 @@ img {
   flex-direction: column;
   justify-content: space-between;
   z-index: var(--z-fixed);
-  transition: right .4s;
+  transition: right 0.4s;
 }
 
 .nav__logo {
@@ -230,7 +232,7 @@ img {
   color: var(--white-color);
   display: inline-flex;
   align-items: center;
-  column-gap: .75rem;
+  column-gap: 0.75rem;
 }
 
 .nav__link i {
@@ -239,7 +241,7 @@ img {
 
 .nav__title {
   font-size: var(--normal-font-size);
-  margin-bottom: .75rem;
+  margin-bottom: 0.75rem;
 }
 
 .nav__close {
@@ -290,22 +292,28 @@ img {
 /*=============== CARDS ===============*/
 .card__title {
   font-size: var(--h3-font-size);
-  margin-bottom: .75rem;
+  margin-bottom: 0.75rem;
 }
 
 .card__article {
-  width: 152px;
+  width: 10rem;
+  height: 15rem;
 }
 
 .card__link {
   position: relative;
   display: grid;
   place-items: center;
+  width: 10rem;
+  height: 15rem;
   color: var(--white-color);
 }
 
 .card__img {
   border-radius: 1rem;
+  width: 10rem;
+  height: 15rem;
+  object-fit: cover;
 }
 
 .card__shadow {
@@ -322,7 +330,6 @@ img {
   position: absolute;
   bottom: 1rem;
   text-align: center;
-  padding-inline: .75rem;
 }
 
 .card__name {
@@ -335,8 +342,8 @@ img {
 
 .card__like {
   position: absolute;
-  top: .75rem;
-  right: .75rem;
+  top: 0.75rem;
+  right: 0.75rem;
   font-size: 1.25rem;
   cursor: pointer;
 }
@@ -358,13 +365,13 @@ img {
 }
 
 .new__card {
-  scale: .8;
-  transition: scale .4s;
+  scale: 0.8;
+  transition: scale 0.4s;
 }
 
 .new__data {
   opacity: 0;
-  transition: opacity .4s;
+  transition: opacity 0.4s;
 }
 
 /* Swiper class */
@@ -378,10 +385,10 @@ img {
 
 .new .swiper-pagination-bullet {
   width: 1.5rem;
-  height: .25rem;
+  height: 0.25rem;
   border-radius: 1rem;
   background-color: var(--white-color);
-  transition: background-color .3s, opacity .3s;
+  transition: background-color 0.3s, opacity 0.3s;
 }
 
 .new .swiper-pagination-bullet-active {
@@ -395,7 +402,7 @@ img {
 
 /*=============== SCROLL BAR ===============*/
 ::-webkit-scrollbar {
-  width: .6rem;
+  width: 0.6rem;
   background-color: hsl(0, 0%, 15%);
 }
 
@@ -413,14 +420,13 @@ img {
 
 /* For medium devices */
 @media screen and (min-width: 768px) {
-
-  .banner__card,
+  /* .banner__card,
   .banner__img {
     height: 400px;
-  }
+  } */
 
   .banner__img {
-    width: 100%;
+    width: 70%;
     object-fit: cover;
     object-position: top;
   }
@@ -478,15 +484,14 @@ img {
 }
 
 @media screen and (min-width: 1300px) {
-
-  .banner__card,
+  /* .banner__card,
   .banner__img {
     height: 480px;
-  }
+  } */
 
   .banner__img,
   .banner__shadow {
-    border-radius: 2rem;
+    border-radius: 1rem;
   }
 
   .card__title {
@@ -500,7 +505,7 @@ img {
 
   .card__name {
     font-size: var(--h3-font-size);
-    margin-bottom: .25rem;
+    margin-bottom: 0.25rem;
   }
 
   .card__category {

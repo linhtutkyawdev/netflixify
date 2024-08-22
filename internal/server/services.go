@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -31,6 +32,19 @@ func ApiHandler(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, resp)
+}
+
+func WebAppHandler(c echo.Context) error {
+
+	posts, err := getPosts()
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+
+	bytes, _ := json.Marshal(posts)
+	component := components.WebApp(os.Getenv("BOT_URL"), string(bytes))
+	return component.Render(c.Request().Context(), c.Response())
 }
 
 func (s *Server) VideoHandler(c echo.Context) error {
@@ -61,7 +75,7 @@ func (s *Server) ThumbnailPostHandler(w http.ResponseWriter, r *http.Request) {
 		if _, err := io.Copy(buf, file); err != nil {
 			log.Fatal(err)
 		}
-		imgSrc = uploadToImgbb(buf.Bytes(), 5*60).Data.Image.URL
+		imgSrc = uploadToImgbb(buf.Bytes(), 30*60).Data.Image.URL
 		defer file.Close()
 	} else {
 		imgSrc = r.FormValue("imgSrc")
@@ -124,7 +138,8 @@ func hashSum(b []byte) string {
 
 func ThumbnailHandler(c echo.Context) error {
 	id := c.QueryParam("tgId")
-	username := c.QueryParam("username")
+	username := c.QueryParam("tgUsername")
+	profile := c.QueryParam("profile")
 
 	imgSrc := c.QueryParam("imgSrc")
 	if imgSrc == "" {
@@ -143,7 +158,7 @@ func ThumbnailHandler(c echo.Context) error {
 	if categoriesStr != "" {
 		categories = strings.Split(categoriesStr, ",")
 	}
-	component := components.Thumbnail(id, username, imgSrc, title, subtitle, categories)
+	component := components.Thumbnail(id, username, profile, imgSrc, title, subtitle, categories)
 	return component.Render(c.Request().Context(), c.Response())
 }
 

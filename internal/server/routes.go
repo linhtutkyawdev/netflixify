@@ -3,11 +3,9 @@ package server
 import (
 	"net/http"
 
-	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/linhtutkyawdev/netflixify/cmd/web"
-	"github.com/linhtutkyawdev/netflixify/cmd/web/components"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -17,7 +15,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	fileServer := http.FileServer(http.FS(web.Files))
 	e.GET("/assets/*", echo.WrapHandler(fileServer))
 
-	e.GET("/", echo.WrapHandler(templ.Handler(components.WebApp())))
+	e.GET("/", WebAppHandler)
 	e.GET("/api", ApiHandler)
 	e.GET("/video", s.VideoHandler)
 
