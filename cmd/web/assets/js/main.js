@@ -49,17 +49,17 @@ document.getElementById('modal__container').innerHTML = posts
   .map(
     (p, index) => `				
     <dialog id="modal_${index}" class="fixed top-0 left-0 w-full h-full bg-slate-900/20 backdrop-blur-lg z-10">
-    <div class="container md:pl-80 md:pt-32 pt-48 text-white">
-          <div class="flex justify-start items-center mb-8 space-x-8">
+    <div class="container md:pl-80 md:pt-32 pt-40 px-8 text-white">
+          <div class="flex md:flex-row flex-col justify-start items-center mb-4">
             <img alt="image" src="${
               p.G_thumbnail_path
-            }" class="w-1/2 rounded-lg"/>
-            <div class="flex flex-col space-y-4">
+            }" class="md:w-1/2 w-full rounded-lg"/>
+            <div class="flex flex-row-reverse md:flex-col">
             <a href="${botUrl}?start=${p.Video_id.slice(15)}">
-              <button class="bg-blue-400 w-24 p-2 text-white flex items-center rounded-md">Watch 🍿</button>
+              <button class="bg-blue-400 w-24 p-2 m-4 text-white flex items-center rounded-md">Watch 🍿</button>
             </a>
             <form method="dialog">
-              <button class="bg-rose-500 w-24 p-2 text-white flex items-center rounded-md">Close <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x ml-2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg></button>
+              <button class="bg-rose-500 w-24 p-2 m-4 text-white flex items-center rounded-md">Close <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x ml-2 w-4 h-4"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg></button>
             </form>
             </div>
           </div>
