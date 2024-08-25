@@ -21,11 +21,11 @@ templ Hero() {
 templ Body() {
 }
 
-templ Notify(text string) {
-	<script>
-		alert(text)
-	</script>
-}
+// templ Notify(text string) {
+// 	<script>
+// 		alert(text)
+// 	</script>
+// }
 
 
 templ WebApp(botUrl string, posts string) {
@@ -155,8 +155,6 @@ templ WebApp(botUrl string, posts string) {
 					</div>
 				</section>
 
-
-
 				<section class="movie"  id="series__list">
 					<h3 class="card__title">Series</h3>
 					<div class="movie__swiper swiper">
@@ -164,6 +162,8 @@ templ WebApp(botUrl string, posts string) {
 						</div>
 					</div>
 				</section>
+
+				<section id="modal__container"></section>
 			</main>
 			<!--=============== SWIPER JS ===============-->
 			<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
