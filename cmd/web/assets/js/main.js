@@ -22,16 +22,13 @@ if (posts.length < 1) {
 
 const botUrl = main.getAttribute('data-botUrl');
 
-document.getElementById(
-  'banner__link'
-).href = `${botUrl}?start=${posts[0].Video_id.slice(15)}`;
 document.getElementById('banner__img').src = posts[0].G_thumbnail_path;
 
 document.getElementById('new__container').innerHTML = posts
   .map(
     (p, index) => `
     <article class="card__article swiper-slide">
-      <button onclick="modal_${index}.show()" class="card__link">
+      <button onclick="modal_${index}.show()" class="card__link"c>
         <img src="${p.Thumbnail_path}" alt="image" class="card__img"/>
         <div class="card__shadow"></div>
         <div class="card__data">
