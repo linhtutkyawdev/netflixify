@@ -19,13 +19,13 @@ make watch
 ![](https://raw.githubusercontent.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-2.png)
 
 <p>
-<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-3.jpg?raw=true" width="200"/>
+<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-3.png?raw=true" width="200"/>
 
-<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-4.jpg?raw=true" width="200"/>
+<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-4.png?raw=true" width="200"/>
 
-<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-5.jpg?raw=true" width="200"/>
+<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-5.png?raw=true" width="200"/>
 
-<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-6.jpg?raw=true" width="200"/>
+<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-6.png?raw=true" width="200"/>
 
-<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-7.jpg?raw=true" width="200"/>
+<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-7.png?raw=true" width="200"/>
 </p>
