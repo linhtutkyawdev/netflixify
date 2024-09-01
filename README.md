@@ -1,49 +1,31 @@
-# Project netflixify
+# NETFLIXIFY (Telegram Webapp)
 
-One Paragraph of project description goes here
-
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-## MakeFile
-
-run all make commands with clean tests
-```bash
-make all build
-```
-
-build the application
-```bash
-make build
-```
-
-run the application
-```bash
-make run
-```
-
-Create DB container
-```bash
-make docker-run
-```
-
-Shutdown DB container
-```bash
-make docker-down
-```
-
-live reload the application
-```bash
+```sh
 make watch
 ```
 
-run the test suite
-```bash
-make test
-```
+## Tech Stack
+- Golang
+- Echo
+- Templ
+- HTMX
+- Tailwindcss
+- Telegram Webapp API
+- Telegram Bot API
 
-clean up binary from the last build
-```bash
-make clean
-```
+## Secreenshots
+
+![](https://raw.githubusercontent.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-1.png)
+![](https://raw.githubusercontent.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-2.png)
+
+<p>
+<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-3.jpg?raw=true" width="200"/>
+
+<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-4.jpg?raw=true" width="200"/>
+
+<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-5.jpg?raw=true" width="200"/>
+
+<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-6.jpg?raw=true" width="200"/>
+
+<img src="https://github.com/linhtutkyawdev/netflixify/blob/master/public/screenshots/s-7.jpg?raw=true" width="200"/>
+</p>
