@@ -4,6 +4,10 @@
 make watch
 ```
 
+## Important
+This project is built together with the "netflixify_bot" project, which will act as a backend. Without the backend the telegram bot will not work. So you might want to check out the backend server written in golang. Here at [NETFLIXIFY_BOT](https://github.com/linhtutkyawdev/netflixify_bot)
+
+
 ## Tech Stack
 - Golang
 - Echo
